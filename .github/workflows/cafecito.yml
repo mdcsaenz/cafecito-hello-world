@@ -1,0 +1,62 @@
+name: Cafecito_Build
+on:
+  push:
+    branches:
+      - main
+# env:
+#   PROJECT_ID: "carbon-broker-24011"
+#   CLUSTER: "cafecito"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        # Checkout the repository to the GitHub Actions runner
+      - name: Checkout the Code
+        id: code_checkout
+        uses: actions/checkout@v2
+        # List the directory contents to verify the code is present
+      - name: Check Directory Contents
+        id: dir_check
+        run: ls -lahR
+        # Install the Requirements File for Dataflow
+      - name: Install Pip Requirements
+        id: pip_install_reqs
+        run: pip install -r requirements.txt
+      - name: Install Google SDK
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCR_DEVOPS_SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ secrets.PROJECT_ID }}
+          export_default_credentials: true
+      - name: Build Jar
+        run: |-
+          docker build -t gcr.io/${{ secrets.PROJECT_ID }}/simple-flask-app:latest -t .
+      - name: Authorize to GCP
+        run: |-
+          gcloud auth configure-docker -q
+      - name: Docker Push
+        run: echo "docker push gcr.io/${{ secrets.PROJECT_ID }}/simple-flask-app:latest"
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+        # Checkout the repository to the GitHub Actions runner
+      - name: Checkout the Code
+        id: code_checkout
+        uses: actions/checkout@v2
+        # List the directory contents to verify the code is present
+      - name: Check Directory Contents
+        id: dir_check
+        run: ls -lahR
+      - name: Deploy Chart
+        uses: hahow/install-helm-chart-action@v1.0.3
+        with:
+          gcloud_auth_key: ${{ secrets.GCR_SERVICE_ACCOUNT_KEY }}
+          gcloud_project_id: ${{ secrets.PROJECT_ID }}
+          cluster_name: ${{ secrets.CLUSTER }}
+          cluster_region: us-central1-c
+          release_namespace: default
+          release_name: cafecito
+          chart_name: holamundo
+          helm_upgrade_args: |-
+            --debug
+            -f values.yaml
