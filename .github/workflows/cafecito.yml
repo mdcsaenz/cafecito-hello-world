@@ -30,7 +30,7 @@ jobs:
           export_default_credentials: true
       - name: Build Jar
         run: |-
-          docker build -t gcr.io/${{ secrets.PROJECT_ID }}/simple-flask-app:latest -t .
+          docker build -t gcr.io/${{ secrets.PROJECT_ID }}/simple-flask-app:latest .
       - name: Authorize to GCP
         run: |-
           gcloud auth configure-docker -q
