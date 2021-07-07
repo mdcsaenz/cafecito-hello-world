@@ -35,7 +35,8 @@ jobs:
         run: |-
           gcloud auth configure-docker -q
       - name: Docker Push
-        run: echo "docker push gcr.io/${{ secrets.PROJECT_ID }}/simple-flask-app:latest"
+        run: |-
+          echo "docker push gcr.io/${{ secrets.PROJECT_ID }}/simple-flask-app:latest"
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
@@ -51,7 +52,7 @@ jobs:
       - name: Deploy Chart
         uses: hahow/install-helm-chart-action@v1.0.3
         with:
-          gcloud_auth_key: ${{ secrets.GCR_SERVICE_ACCOUNT_KEY }}
+          gcloud_auth_key: ${{ secrets.GCR_DEVOPS_SERVICE_ACCOUNT_KEY }}
           gcloud_project_id: ${{ secrets.PROJECT_ID }}
           cluster_name: ${{ secrets.CLUSTER }}
           cluster_region: us-central1-c
