@@ -61,4 +61,4 @@ jobs:
           chart_name: holamundo
           helm_upgrade_args: |-
             --debug
-            -f values.yaml
+            -f holamundo/values.yaml
