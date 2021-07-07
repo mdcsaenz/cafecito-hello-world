@@ -37,6 +37,7 @@ jobs:
       - name: Docker Push
         run: echo "docker push gcr.io/${{ secrets.PROJECT_ID }}/simple-flask-app:latest"
   deploy:
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
         # Checkout the repository to the GitHub Actions runner
