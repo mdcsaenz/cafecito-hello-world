@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - main
-# env:
-#   PROJECT_ID: "carbon-broker-24011"
-#   CLUSTER: "cafecito"
 jobs:
   build:
     runs-on: ubuntu-latest
